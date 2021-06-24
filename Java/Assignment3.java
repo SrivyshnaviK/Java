@@ -1,24 +1,33 @@
 package com.Vyshnavi.assignments;
-import java.io.IOException;
-import java.util.Scanner;
-import java.net.*;
-
-class Median {
-    public void pingHost(String host) throws IOException {
-        long time= System.currentTimeMillis();
-        Inet4Address inetAddress= (Inet4Address) Inet4Address.getByName(host);
-        if(inetAddress.isReachable(5000)) {
-            System.out.println("Pining to.." + host);
-            time=System.currentTimeMillis()-time;
-            System.out.println("Median:"+time);
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+class PingIP {
+    public static void runSystemCommand(String command) {
+        int count=0,i=0;
+        double[] times=new double[10];
+        try {
+            Process p = Runtime.getRuntime().exec(command);
+            BufferedReader inputStream = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+            String s = "";
+            while ((s = inputStream.readLine()) != null) {
+                System.out.println(s);
+                int index1=s.lastIndexOf("=");
+                int index2=s.lastIndexOf("ms");
+                if(index1!=-1&&index2!=-1&&count<10){
+                    count++;
+                double time=Double.parseDouble(s.substring(index1+1,index2-1));
+                times[i++]=time;}
+            }
+            Arrays.sort(times);
+            System.out.println("Median Time to ping:"+(times[4]+times[5])/2);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else
-            System.out.println("Host is not reachable");
     }
-    public static void main(String[] args) throws IOException {
-        Scanner sc=new Scanner(System.in);
-        System.out.println("Enter Host Address:");
-        String host=sc.next();
-        new Median().pingHost(host);
+    public static void main(String[] args) {
+        String ip = "google.com";
+        runSystemCommand("ping -c 10 " + ip);
     }
 }
